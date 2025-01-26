@@ -1,4 +1,5 @@
 import streamlit as st
+import random
 
 # Custom CSS for deep blue theme
 st.markdown(
@@ -43,6 +44,25 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# List of New Testament verses taught by Jesus
+bible_verses = [
+    "Matthew 5:44 - But I tell you, love your enemies and pray for those who persecute you.",
+    "Matthew 6:33 - But seek first his kingdom and his righteousness, and all these things will be given to you as well.",
+    "Matthew 7:7 - Ask and it will be given to you; seek and you will find; knock and the door will be opened to you.",
+    "John 14:6 - Jesus answered, 'I am the way and the truth and the life. No one comes to the Father except through me.'",
+    "John 8:12 - When Jesus spoke again to the people, he said, 'I am the light of the world. Whoever follows me will never walk in darkness, but will have the light of life.'",
+    "Matthew 11:28 - Come to me, all you who are weary and burdened, and I will give you rest.",
+    "Matthew 22:37-39 - Jesus replied: 'Love the Lord your God with all your heart and with all your soul and with all your mind. This is the first and greatest commandment. And the second is like it: Love your neighbor as yourself.'",
+    "John 3:16 - For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.",
+    "Matthew 5:16 - In the same way, let your light shine before others, that they may see your good deeds and glorify your Father in heaven.",
+    "John 15:12 - My command is this: Love each other as I have loved you."
+]
+
+# Function to display a random Bible verse
+def show_random_verse():
+    verse = random.choice(bible_verses)
+    st.session_state.current_verse = verse
+
 # Initialize session state to store tasks and schedules
 if 'tasks' not in st.session_state:
     st.session_state.tasks = []
@@ -52,6 +72,9 @@ if 'work_schedule' not in st.session_state:
         "Weekdays": {"Work Time": "", "Quiet Time": ""},
         "Weekends": {"Work Time": "", "Quiet Time": ""},
     }
+
+if 'current_verse' not in st.session_state:
+    st.session_state.current_verse = random.choice(bible_verses)
 
 # App Title
 st.title("📅 Daily Planner App")
@@ -129,3 +152,11 @@ st.write("---")
 st.write("**🌅 Weekends (Saturday and Sunday)**")
 st.write(f"- Work Time: {st.session_state.work_schedule['Weekends']['Work Time']}")
 st.write(f"- Quiet Time: {st.session_state.work_schedule['Weekends']['Quiet Time']}")
+
+# Section for random Bible verses
+st.header("📖 Random Bible Verse")
+st.write("Here’s a verse taught by Jesus to inspire you:")
+st.write(f"**{st.session_state.current_verse}**")
+
+if st.button("Show Another Verse"):
+    show_random_verse()
