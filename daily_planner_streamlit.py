@@ -1,5 +1,8 @@
 import streamlit as st
 import random
+import time
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 # Custom CSS for deep blue theme
 st.markdown(
@@ -58,10 +61,20 @@ bible_verses = [
     "John 15:12 - My command is this: Love each other as I have loved you."
 ]
 
-# Function to display a random Bible verse
-def show_random_verse():
-    verse = random.choice(bible_verses)
-    st.session_state.current_verse = verse
+# Function to send an email with a random Bible verse
+def send_email(verse, email):
+    message = Mail(
+        from_email="your-email@example.com",  # Replace with your verified SendGrid email
+        to_emails=email,
+        subject="Hourly Bible Verse",
+        html_content=f"<strong>{verse}</strong>"
+    )
+    try:
+        sg = SendGridAPIClient(st.secrets["SENDGRID_API_KEY"])
+        response = sg.send(message)
+        st.success(f"Email sent to {email}!")
+    except Exception as e:
+        st.error(f"Error sending email: {e}")
 
 # Initialize session state to store tasks and schedules
 if 'tasks' not in st.session_state:
@@ -159,4 +172,17 @@ st.write("Here’s a verse taught by Jesus to inspire you:")
 st.write(f"**{st.session_state.current_verse}**")
 
 if st.button("Show Another Verse"):
-    show_random_verse()
+    st.session_state.current_verse = random.choice(bible_verses)
+
+# Section for email notifications
+st.header("🔔 Hourly Bible Verse Notifications")
+email = st.text_input("Enter your email to receive hourly Bible verses:")
+
+if st.button("Subscribe for Notifications"):
+    if email:
+        # Send the first verse immediately
+        send_email(st.session_state.current_verse, email)
+        # Schedule hourly notifications (this is a placeholder; see notes below)
+        st.write("You will receive hourly Bible verses starting now!")
+    else:
+        st.warning("Please enter a valid email address.")
